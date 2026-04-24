@@ -1,33 +1,35 @@
-name: CICD Reactjs Project...
+name: CICD Reactjs Project
 
 on: 
   push:
     branches: [ main ] 
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-
-        steps:    
-        - name: Checkout code 
-          uses: actions/checkout@v4
-        - name: SSH and Deploy
-          uses: appleboy/ssh-action@master
-          with:
-            host: ${{ secrets.EC2_HOST }}  # <--- Check this name matches your Secret
-            username: ubuntu
-            key: ${{ secrets.EC2_SSH_KEY }}
-            port: 22                       # Adding this explicitly can help
-            script: |
-                cd /home/ubuntu/your-repo-name
-                git pull origin main
-        - name: Set up Node.js
-          uses: actions/setup-node@v3
-          with:
-            node-version: '18'
-        - name: Install dependencies
-          run: npm install
-        - name: Build the project
-          run: npm run build
-        - name: Deploy to server
-          run: npm run production
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            # 1. Go to your home directory
+            cd /home/ubuntu
+            
+            # 2. Check if the repo folder exists, if not, clone it
+            if [ ! -d "CloudNotes" ]; then
+              git clone https://github.com/your-username/CloudNotes.git
+            fi
+            
+            # 3. Enter the folder
+            cd CloudNotes
+            
+            # 4. Pull latest changes, install, and build
+            git pull origin main
+            npm install
+            npm run build
+            
+            # 5. (Optional) If using Nginx, it already points to the /dist or /build folder.
