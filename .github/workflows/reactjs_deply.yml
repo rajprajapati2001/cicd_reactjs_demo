@@ -1,0 +1,33 @@
+name: CICD Reactjs Project...
+
+on: 
+  push:
+    branches: [ main ]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:    
+        - name: Checkout code
+          uses: actions/checkout@v6
+        - name: SSH Deploy
+          uses: appleboy/ssh-action@master
+          with:
+            host: ${{ secrets.HOST }}
+            username: ${{ secrets.USERNAME }}
+            key: ${{ secrets.KEY }}
+            port: 5173
+            script: |
+              cd /var/www/html/reactjs
+              git pull origin main
+        - name: Set up Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: '18'
+        - name: Install dependencies
+          run: npm install
+        - name: Build the project
+          run: npm run build
+        - name: Deploy to server
+          run: npm run production
