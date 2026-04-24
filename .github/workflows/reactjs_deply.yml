@@ -1,32 +1,27 @@
-name: CICD Reactjs Project...
+name: Push-to-EC2
 
-on: 
+on:
   push:
-    branches: [ main ] 
+    branches:
+      - main  # Trigger only on pushes to the main branch
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest
 
-        steps:    
-        - name: Checkout code
-          uses: actions/checkout@v4
-        - name: SSH Deploy
-          uses: appleboy/ssh-action@master
-          with:
-            host: ${{ secrets.HOST }}
-            username: ${{ secrets.USERNAME }}
-            key: ${{ secrets.KEY }}
-            script: |
-              cd /var/www/html/reactjs
-              git pull origin main
-        - name: Set up Node.js
-          uses: actions/setup-node@v3
-          with:
-            node-version: '18'
-        - name: Install dependencies
-          run: npm install
-        - name: Build the project
-          run: npm run build
-        - name: Deploy to server
-          run: npm run production
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: SSH and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/your-repo-name
+            git pull origin main
+            npm install
+            npm run build
+            # Nginx is already pointing to the /dist folder, so we're live!
