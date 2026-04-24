@@ -11,15 +11,16 @@ jobs:
         steps:    
         - name: Checkout code 
           uses: actions/checkout@v4
-        - name: SSH Deploy
+        - name: SSH and Deploy
           uses: appleboy/ssh-action@master
           with:
-            host: ${{ secrets.EC2_HOST }}
-            username: ${{ secrets.EC2_USERNAME }}
+            host: ${{ secrets.EC2_HOST }}  # <--- Check this name matches your Secret
+            username: ubuntu
             key: ${{ secrets.EC2_SSH_KEY }}
+            port: 22                       # Adding this explicitly can help
             script: |
-              cd /var/www/html/reactjs
-              git pull origin main
+                cd /home/ubuntu/your-repo-name
+                git pull origin main
         - name: Set up Node.js
           uses: actions/setup-node@v3
           with:
