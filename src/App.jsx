@@ -17,6 +17,7 @@ function App() {
         </div>
         <div>
           <h1>Get started with Reactjs + Vite</h1>
+          <p>Done for the day...</p>
           <p>
             Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
           </p>
