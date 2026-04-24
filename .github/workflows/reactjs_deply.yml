@@ -1,35 +1,24 @@
-name: CICD Reactjs Project
+name: New CICD ReactJS ON
 
-on: 
+on:
   push:
-    branches: [ main ] 
+    branches: [ main ]
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: SSH and Deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22
-          script: |
-            # Load NVM into this session
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            
-            # Use Node 22
-            nvm use 22
-            
-            # Navigate to project
-            cd /home/ubuntu/cicd_reactjs_demo
-            
-            # Update code
-            git pull origin main
-            
-            # Clean install and build
-            rm -rf node_modules
-            npm install
-            npm run build
+    - uses: actions/checkout@v4
+    - uses: actions/ssh@v0.1.7
+      with:
+        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+        ssh-known-hosts: ${{ secrets.EC2_HOST }}
+    - name: Deploy to EC2
+      run: |
+        ssh -o "StrictHostKeyChecking=no" ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          cd /home/ubuntu/cicd_reactjs_deom
+          git pull origin main
+          npm install
+          npm run build
+          npm run dev -- --host
