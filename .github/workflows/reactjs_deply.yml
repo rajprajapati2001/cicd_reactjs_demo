@@ -9,14 +9,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/ssh@v0.1.7
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Executing remote ssh commands using password
+      uses: appleboy/ssh-action@v1.0.3
       with:
-        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-        ssh-known-hosts: ${{ secrets.EC2_HOST }}
-    - name: Deploy to EC2
-      run: |
-        ssh -o "StrictHostKeyChecking=no" ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          cd /
           cd /home/ubuntu/cicd_reactjs_deom
           git pull origin main
           npm install
