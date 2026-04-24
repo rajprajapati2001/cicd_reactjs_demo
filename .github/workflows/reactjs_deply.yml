@@ -19,7 +19,7 @@ jobs:
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          cd /home/ubuntu/cicd_reactjs_deom
+          cd /home/ubuntu/cicd_reactjs_demo
           git pull origin main
           npm install
           npm run build
